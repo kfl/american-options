@@ -9,7 +9,7 @@ import System.Environment(getArgs)
 import qualified Criterion.Main as C
 
 
--- Pointwise manipulation of vectors an scalars
+-- Pointwise manipulation of vectors and scalars
 v1 ^*^ v2 = V.zipWith (*) v1 v2
 v1 ^+^ v2 = V.zipWith (+) v1 v2
 c -^ v = V.map (c -) v
