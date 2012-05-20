@@ -4,15 +4,15 @@ struct
 structure V = Vector
 structure VS = VectorSlice
 
-fun flip f (x, y) = f (y, x)
-
 val i2s = Int.toString
 
 fun zipWith opr v1 v2 = 
-    let val (x, y, f) = if VS.length v2 < VS.length v1 then (v2, v1, flip opr)
-                        else (v1, v2, opr)
-    in  VS.full(VS.mapi (fn (i,a) => f(a, VS.sub(y, i))) x)
+    let val (x, y) = if VS.length v2 < VS.length v1 
+                     then (VS.subslice(v1, 0, SOME(VS.length v2)), v2)
+                     else (v1, v2)
+    in  VS.full(VS.mapi (fn (i,a) => opr(a, VS.sub(y, i))) x)
     end
+
 
 (* Pointwise manipulation of vectors-slices and scalars *)
 infix ^*^ ^+^ -^ *^
