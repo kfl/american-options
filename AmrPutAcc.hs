@@ -11,7 +11,7 @@ import qualified Data.Array.Accelerate.Interpreter as AI
 import qualified Data.Array.Accelerate.CUDA as ACUDA
 import qualified Data.Array.Accelerate.IO as AIO
 
-import Data.List(foldl')
+import Data.List(foldl', foldl1')
 import System.Environment(getArgs)
 
 --import qualified Criterion.Main as C
@@ -58,9 +58,9 @@ binom expiry = first --(first ! (A.constant 0))
 --   St<-S0*u.pow[1:i]*d.pow[i:1]
 --   put[1:i]<-pmax(strike-St,(qUR*put[2:(i+1)]+qDR*put[1:i]))
 -- }
-    first = foldl' prevPut finalPut [n, n-1 .. 1]
-    prevPut :: A.Acc(A.Vector FloatRep) -> Int -> A.Acc(A.Vector FloatRep)
-    prevPut put i = 
+    first = (foldl1' (A.>->) $ map prevPut [n, n-1 .. 1]) $ finalPut
+    prevPut :: Int -> A.Acc(A.Vector FloatRep) -> A.Acc(A.Vector FloatRep)
+    prevPut i put =
       ppmax(strike -^ st) ((qUR *^ vtail put) ^+^ (qDR *^ vinit put))
         where st = s0 *^ ((vtake i uPow) ^*^ (vdrop (n+1-i) dPow))
 
