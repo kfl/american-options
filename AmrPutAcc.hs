@@ -35,11 +35,16 @@ vreverse v =
   let len = A.unindex1 (A.shape v) in
   A.backpermute (A.shape v) (\ix -> A.index1 $ len - (A.unindex1 ix) - 1) v
 
+type FloatRep = Float
+--type FloatRep = Double  -- I would like to use Double, but then I get a large numbers of of ptxas errors like:
+                          --   ptxas /tmp/tmpxft_00006c13_00000000-2_dragon26988.ptx, line 83; warning : Double is not supported. Demoting to float
+                          -- and I just compute NaN
 
-binom :: Int -> A.Acc(A.Vector Float)
+
+binom :: Int -> A.Acc(A.Vector FloatRep)
 binom expiry = first --(first ! (A.constant 0))
   where 
-    uPow, dPow :: A.Acc(A.Vector Float)
+    uPow, dPow :: A.Acc(A.Vector FloatRep)
     uPow = A.use $ AIO.fromVector $ V.generate (n+1) (u^)
     dPow = A.use $ AIO.fromVector $ V.reverse $ V.generate (n+1) (d^)
     
@@ -54,7 +59,7 @@ binom expiry = first --(first ! (A.constant 0))
 --   put[1:i]<-pmax(strike-St,(qUR*put[2:(i+1)]+qDR*put[1:i]))
 -- }
     first = foldl' prevPut finalPut [n, n-1 .. 1]
-    prevPut :: A.Acc(A.Vector Float) -> Int -> A.Acc(A.Vector Float)
+    prevPut :: A.Acc(A.Vector FloatRep) -> Int -> A.Acc(A.Vector FloatRep)
     prevPut put i = 
       ppmax(strike -^ st) ((qUR *^ vtail put) ^+^ (qDR *^ vinit put))
         where st = s0 *^ ((vtake i uPow) ^*^ (vdrop (n+1-i) dPow))
