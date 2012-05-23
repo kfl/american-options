@@ -26,24 +26,34 @@ c *^ v = A.map (c *) v
 pmax v c = A.map (A.max c) v
 ppmax = A.zipWith A.max 
 
--- Don't change the shape of the array, instead shift in zeros
-vselect pf v = A.permute (\x _ -> x) zeros selectf v
+-- Don't change the shape of the array, instead shift in zeros from the right
+vselect selectf v = A.permute (\x _ -> x) zeros selectf v
   where zeros = A.fill (A.shape v) 0
-        selectf ix = pf ix ? (ix, A.ignore)
 
-vtail = vdrop 1
-vdrop i = vselect dropf
-  where dropf ix = (A.constant i) <=* (A.unindex1 ix)
+vtail v = vdrop 1 v
+vdrop n v = vselect dropf v
+  where dropf ix =
+          let len = A.unindex1 $ A.shape v
+              cn  = A.constant n
+              i   = A.unindex1 ix
+          in cn <=* i ? (A.index1 $ i-cn, A.ignore)
 
-pvtake i = vselect takef
-  where takef ix = (A.unindex1 ix) <* i
+pvtake n = vselect takef
+  where takef ix = (A.unindex1 ix) <* n ? (ix, A.ignore)
 
 vinit v = pvtake ((A.unindex1 $ A.shape v) - 1) v
-vtake i = pvtake (A.constant i)
+vtake n = pvtake (A.constant n)
 
 vreverse v = 
   let len = A.unindex1 (A.shape v) in
   A.backpermute (A.shape v) (\ix -> A.index1 $ len - (A.unindex1 ix) - 1) v
+
+testing f = 
+  let testdata :: A.Acc(A.Vector Int)
+      testdata = A.generate (A.index1 $ A.constant 7) (\ix -> 10 + A.unindex1 ix)
+  in  AI.run $ f testdata
+
+
 
 type FloatRep = Float
 --type FloatRep = Double  -- I would like to use Double, but then I get a large numbers of of ptxas errors like:
