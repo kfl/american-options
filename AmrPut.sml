@@ -68,5 +68,16 @@ fun binom expiry =
     in VS.sub (first, 0)
     end
 
+(* Expected results for binom:
+
+      expiry    price 
+           1      6.74543295135838
+           8     13.94568883837488
+          16     16.22259138591852
+          30     17.65370590709356
+          64     18.42993156506373
+         128     18.573732615311993
+*)
+
 
 end
