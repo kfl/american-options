@@ -1,0 +1,10 @@
+local
+   $(SML_LIB)/basis/basis.mlb
+in
+   vec.sig
+   list_vec.sml
+   fvec.sml
+(*   ../utest/utest.mlb
+   test_vec.sml
+*)
+end
