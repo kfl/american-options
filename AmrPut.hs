@@ -55,7 +55,8 @@ binom expiry = V.head first
 main = do
   args <- getArgs
   case args of
-    ["-f"] -> print $ binom 64
+    ["-f"] -> print $ binom 128
+    ["-t"] -> print $ map binom [1, 8, 16, 30, 64, 128]
     _ -> do
       let benchmarks = [ C.bench (show years) $ C.nf binom years
                        | years <- [1, 16, 30, 32]]
