@@ -63,7 +63,7 @@ fun binom expiry =
             let val st = s0 *^ ((vtake i uPow) ^*^ (vdrop (n+1-i) dPow)) 
             in  ppmax(strike -^ st) ((qUR *^ vtail put) ^+^ (qDR *^ vinit put))
             end
-        val first = foldl prevPut finalPut (List.tabulate(n, fn i => n-i))
+        val first = V.foldl prevPut finalPut (V.tabulate(n, fn i => n-i))
 
     in VS.sub (first, 0)
     end
