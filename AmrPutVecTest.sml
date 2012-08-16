@@ -1,8 +1,8 @@
-(*
 structure AP = AmrPutVec(Fvec)
+(*
 structure AP = AmrPutVec(ListVec)
-*)
 structure AP = AmrPut
+*)
 
 fun pr n =
     let val _ = print ("AmrPut.binom(" ^ Int.toString n ^ ") = ")
