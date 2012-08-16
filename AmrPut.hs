@@ -59,5 +59,5 @@ main = do
     ["-t"] -> print $ map binom [1, 8, 16, 30, 64, 128]
     _ -> do
       let benchmarks = [ C.bench (show years) $ C.nf binom years
-                       | years <- [1, 16, 30, 32]]
+                       | years <- [1, 16, 30,  64, 128]]
       C.defaultMain benchmarks
