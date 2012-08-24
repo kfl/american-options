@@ -5,14 +5,17 @@ MLCOMP=mlton
 
 UTEST_FILES=$(shell ls utest/*.{sig,sml,mlb})
 VEC_FILES=$(shell ls vec/*.{sig,sml,mlb})
+# Set FVEC to fvec for using Standard ML
+FVEC=fvec
+
 .PHONY: all
 all: runvec
 
 runvec: $(VEC_FILES) $(UTEST_FILES)
-	$(MLCOMP) -output $@ vec/vec.mlb
+	$(MLCOMP) -mlb-path-var 'FVEC $(FVEC)' -output $@ vec/vec.mlb
 
 AmrPutVec: AmrPutVec.sml AmrPutVecTest.sml $(VEC_FILES) $(UTEST_FILES)
-	$(MLCOMP) -output $@ AmrPutVec.mlb
+	$(MLCOMP) -mlb-path-var FVEC $(FVEC) -output $@ AmrPutVec.mlb
 
 clean:
 	find . -name MLB | xargs rm -rf

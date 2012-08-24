@@ -4,7 +4,7 @@ local
 in
    vec.sig
    list_vec.sml
-   fvec.sml
+   $(FVEC).sml
 (*   ../utest/utest.mlb
    test_vec.sml
 *)
