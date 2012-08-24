@@ -6,7 +6,7 @@ type 'a t = int * (int -> 'a)
 
 fun fromList (l:'a list) :  'a t =
     let val a = Vector.fromList l
-    in (Vector.length a, fn i => Vector.sub(a,i))
+    in (Vector.length a, fn i => Unsafe.Vector.sub(a,i))
     end
 
 fun map f (n,g) = (n, f o g)
@@ -76,6 +76,6 @@ fun sub ((n,f),i) =
 
 fun memoize (n,f) =
     let val v = Vector.tabulate(n,f)
-    in (n, fn i => Vector.sub(v,i))
+    in (n, fn i => Unsafe.Vector.sub(v,i))
     end
 end

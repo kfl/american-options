@@ -58,6 +58,9 @@ done running with Mlton on a MacBook Pro (mid-2012 model):
 	     user    0m13.272s
 	     sys     0m0.015s
 
+With the use of Unsafe.Vector in the implementation of the
+Fvec.memoize function, real time drops to 12.57s.
+
 To redo the experiments, for each case, alter the file
 AmrPutVecTest.sml appropriately and run 
 
