@@ -7,13 +7,14 @@ model.
 
 The various implementation in `AmrPut`* is based on the R-code from
 Rolf Poulsen's FAMØS paper
-[Amerikanske optioner og finansielle beregninger](http://www.math.ku.dk/~rolf/FAMOES/Famoes_Follow-up.pdf)
+[Amerikanske optioner og finansielle beregninger](http://www.math.ku.dk/~rolf/FAMOES/Famoes_Follow-up.pdf).
 
 
 Benmark Results from Haskell Version(s)
 ---------------------------------------
 
-Experiments done using criterion, on a MacBook Pro (early-2010 model).
+Experiments done using Haskell library `criterion`, on a MacBook Pro
+(early-2010 model).
 
    Data.Vector.Unboxed, optimised with GHC 7.4.2 -O3 (AmrPut.hs)
    
