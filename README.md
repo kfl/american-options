@@ -5,6 +5,11 @@ Emperiments with different libraries and (eventually) algorithms for
 pricing American Options.  Currently only using a standard binomial
 model.
 
+The various implementation in `AmrPut`* is based on the R-code from
+Rolf Poulsen's FAMØS paper
+[Amerikanske optioner og finansielle beregninger](http://www.math.ku.dk/~rolf/FAMOES/Famoes_Follow-up.pdf)
+
+
 Benmark Results from Haskell Version(s)
 ---------------------------------------
 
