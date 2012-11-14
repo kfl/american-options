@@ -4,7 +4,8 @@ module AmrPutParMonad
 where
 import qualified Data.Vector.Unboxed as V
 
-import qualified Control.Monad.Par as P
+--import qualified Control.Monad.Par as P
+import qualified Control.Monad.Par.Scheds.Direct as P
 import Control.DeepSeq
 
 import Data.List(foldl')
