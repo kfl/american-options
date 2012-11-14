@@ -45,8 +45,14 @@ binom :: Int -> A.Acc(A.Vector FloatRep)
 binom expiry = first --(first ! (A.constant 0))
   where 
     uPow, dPow :: A.Acc(A.Vector FloatRep)
-    uPow = A.use $ AIO.fromVector $ V.generate (n+1) (u^)
-    dPow = A.use $ AIO.fromVector $ V.reverse $ V.generate (n+1) (d^)
+    uPow = A.generate (A.index1$ A.constant $ n+1) (\ix -> let i = A.fromIntegral $ A.unindex1 ix 
+                                                           in  A.constant u **  i)
+
+    dPow = vreverse $ A.generate (A.index1$ A.constant $ n+1) $ \ix -> let i = A.fromIntegral $ A.unindex1 ix 
+                                                                       in  A.constant d **  i
+
+    --uPow = A.use (AIO.fromVector (V.generate (n+1) (u^)))
+    --dPow = A.use $ AIO.fromVector $ V.reverse $ V.generate (n+1) (d^)
     
     --uPow = A.generate (A.index1$ A.constant $ n+1) (\ix -> let i = A.unindex1 ix in u^i)
     --dPow = vreverse $ A.generate (A.index1$ A.constant $ n+1) (\ix -> let i = A.unindex1 ix in d^i)
@@ -82,11 +88,9 @@ binom expiry = first --(first ! (A.constant 0))
 
 arun run x = head $ A.toList $ run x
 
--- main = do
---   args <- getArgs
---   case args of
---     ["-f"] -> print $ binom 64
---     _ -> do
---       let benchmarks = [ C.bench (show years) $ C.nf binom years
---                        | years <- [1, 16, 30, 32]]
---       C.defaultMain benchmarks
+main = do
+  args <- getArgs
+  case args of
+    ["-c", n] -> print $ arun ACUDA.run $ binom (read n)
+    ["-i", n] -> print $ arun AI.run $ binom (read n)
+    _         -> print $ arun ACUDA.run $ binom 8
