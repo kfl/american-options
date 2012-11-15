@@ -1,6 +1,5 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 module AmrPutAcc 
---       (binom, main)
+       (binom, main)
 where
 import qualified Data.Array.Accelerate as A
 import qualified Data.Vector.Storable as V
@@ -9,9 +8,8 @@ import Data.Array.Accelerate (Z(..), (:.)(..),(!))
 
 import qualified Data.Array.Accelerate.Interpreter as AI
 import qualified Data.Array.Accelerate.CUDA as ACUDA
-import qualified Data.Array.Accelerate.IO as AIO
 
-import Data.List(foldl')
+import Data.List(foldl1')
 import System.Environment(getArgs)
 
 --import qualified Criterion.Main as C
@@ -36,39 +34,35 @@ vreverse v =
   A.backpermute (A.shape v) (\ix -> A.index1 $ len - (A.unindex1 ix) - 1) v
 
 type FloatRep = Float
---type FloatRep = Double  -- I would like to use Double, but then I get a large numbers of of ptxas errors like:
-                          --   ptxas /tmp/tmpxft_00006c13_00000000-2_dragon26988.ptx, line 83; warning : Double is not supported. Demoting to float
-                          -- and I just compute NaN
+--type FloatRep = Double  
+-- I would like to use Double, but my NVIDA card does not support double
 
 
 binom :: Int -> A.Acc(A.Vector FloatRep)
-binom expiry = first --(first ! (A.constant 0))
-  where 
-    uPow, dPow :: A.Acc(A.Vector FloatRep)
-    uPow = A.generate (A.index1$ A.constant $ n+1) (\ix -> let i = A.fromIntegral $ A.unindex1 ix 
-                                                           in  A.constant u **  i)
-
-    dPow = vreverse $ A.generate (A.index1$ A.constant $ n+1) $ \ix -> let i = A.fromIntegral $ A.unindex1 ix 
-                                                                       in  A.constant d **  i
-
-    --uPow = A.use (AIO.fromVector (V.generate (n+1) (u^)))
-    --dPow = A.use $ AIO.fromVector $ V.reverse $ V.generate (n+1) (d^)
+binom expiry = first
+  where     
+    i2f = A.fromIntegral . A.unindex1
     
-    --uPow = A.generate (A.index1$ A.constant $ n+1) (\ix -> let i = A.unindex1 ix in u^i)
-    --dPow = vreverse $ A.generate (A.index1$ A.constant $ n+1) (\ix -> let i = A.unindex1 ix in d^i)
-    
-    st = s0 *^ (uPow ^*^ dPow)
+    uPow, dPow :: Int -> A.Acc(A.Vector FloatRep)
+    dPow i = vdrop (n+1-i)
+           $ vreverse
+           $ A.generate (A.constant (Z:.n+1)) (\ix -> d' ** i2f ix)
+
+    uPow i = vtake i
+           $ A.generate (A.constant (Z:.n+1)) (\ix -> u' ** i2f ix)
+
     finalPut = pmax (strike -^ st) 0
+        where st = s0 *^ (uPow(n+1)^*^ dPow(n+1))
 
 -- for (i in n:1) {
 --   St<-S0*u.pow[1:i]*d.pow[i:1]
 --   put[1:i]<-pmax(strike-St,(qUR*put[2:(i+1)]+qDR*put[1:i]))
 -- }
-    first = foldl' prevPut finalPut [n, n-1 .. 1]
-    prevPut :: A.Acc(A.Vector FloatRep) -> Int -> A.Acc(A.Vector FloatRep)
-    prevPut put i = 
+    first = foldl1' (A.>->) (map prevPut [n, n-1 .. 1]) finalPut
+    prevPut :: Int -> A.Acc(A.Vector FloatRep) -> A.Acc(A.Vector FloatRep)
+    prevPut i put = 
       ppmax(strike -^ st) ((qUR *^ vtail put) ^+^ (qDR *^ vinit put))
-        where st = s0 *^ ((vtake i uPow) ^*^ (vdrop (n+1-i) dPow))
+        where st = s0 *^ (uPow i ^*^ dPow i)
 
     -- standard econ parameters
     strike = 100
@@ -84,6 +78,10 @@ binom expiry = first --(first ! (A.constant 0))
     stepR = exp(r*dt)
     q = (stepR-d)/(u-d)
     qUR = A.constant$ q/stepR; qDR = A.constant$ (1-q)/stepR
+    u' = A.constant u
+    d' = A.constant d
+
+
 
 
 arun run x = head $ A.toList $ run x
