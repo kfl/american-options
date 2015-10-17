@@ -3,8 +3,8 @@
 #MLCOMP=SML_LIB=$(MLKITLIB)/lib/mlkit $(MLKITLIB)/bin/mlkit
 MLCOMP=mlton
 
-UTEST_FILES=$(shell ls utest/*.{sig,sml,mlb})
-VEC_FILES=$(shell ls vec/*.{sig,sml,mlb})
+UTEST_FILES=$(shell ls utest/*.sig utest/*.sml utest/*.mlb)
+VEC_FILES=$(shell ls vec/*.sig vec/*.sml vec/*.mlb)
 # Set FVEC to fvec for using Standard ML
 FVEC=fvec
 
