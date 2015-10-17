@@ -15,7 +15,7 @@ runvec: $(VEC_FILES) $(UTEST_FILES)
 	$(MLCOMP) -mlb-path-var 'FVEC $(FVEC)' -output $@ vec/vec.mlb
 
 AmrPutVec: AmrPutVec.sml AmrPutVecTest.sml $(VEC_FILES) $(UTEST_FILES)
-	$(MLCOMP) -mlb-path-var FVEC $(FVEC) -output $@ AmrPutVec.mlb
+	$(MLCOMP) -mlb-path-var 'FVEC $(FVEC)' -output $@ AmrPutVec.mlb
 
 clean:
 	find . -name MLB | xargs rm -rf
