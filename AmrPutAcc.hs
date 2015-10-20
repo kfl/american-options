@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module AmrPutAcc 
        (binom, main)
 where
@@ -21,8 +22,8 @@ v1 ^+^ v2 = A.zipWith (+) v1 v2
 c -^ v = A.map (c -) v
 c *^ v = A.map (c *) v
 
-pmax v c = A.map (A.max c) v
-ppmax = A.zipWith A.max 
+pmax v c = A.map (max c) v
+ppmax = A.zipWith max
 
 vtail = A.tail
 vinit = A.init
