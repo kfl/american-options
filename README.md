@@ -10,6 +10,18 @@ Rolf Poulsen's FAMØS paper
 [Amerikanske optioner og finansielle beregninger](http://www.math.ku.dk/~rolf/FAMOES/Famoes_Follow-up.pdf).
 
 
+Compiling Haskell Versions
+--------------------------
+
+The Haskell implementations do not define a Main module, so in order
+to compile them to standalone executables you have to pass an
+appropriate `-main-is` option to GHC.  For example:
+
+    ghc -O3 --make AmrPut.hs -main-is AmrPut -o AmrPut
+
+Check the source file for the module name to use.
+
+
 Benmark Results from Haskell Version(s)
 ---------------------------------------
 
